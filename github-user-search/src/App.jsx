@@ -1,37 +1,36 @@
-import React, { useState } from 'react';
-import SearchBar from './components/SearchBar';
-import UserCard from './components/UserCard';
-import { fetchUserData } from './services/githubService';
+import { useState } from 'react';
+import SearchForm from './components/SearchForm';
+import SearchResults from './components/SearchResults';
+import { searchUsers } from './services/githubService';
 
-function App() {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(false);
+const SearchPage = () => {
+  const [users, setUsers] = useState([]);
+  const [queryParams, setQueryParams] = useState({});
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(false);
 
-  const handleSearch = async (username) => {
-    setLoading(true);
-    setError(false);
-    setUser(null);
-    try {
-      const userData = await fetchUserData(username);
-      setUser(userData);
-    } catch (err) {
-      setError(true);
-    } finally {
-      setLoading(false);
-    }
+  const handleSearch = async (params) => {
+    setQueryParams(params);
+    setPage(1);
+    const data = await searchUsers({ ...params, page: 1 });
+    setUsers(data.items);
+    setHasMore(data.total_count > data.items.length);
+  };
+
+  const loadMore = async () => {
+    const nextPage = page + 1;
+    const data = await searchUsers({ ...queryParams, page: nextPage });
+    setUsers((prev) => [...prev, ...data.items]);
+    setPage(nextPage);
+    setHasMore(data.total_count > users.length + data.items.length);
   };
 
   return (
-    <div>
-      <h1>GitHub User Search</h1>
-      <SearchBar onSearch={handleSearch} />
-      
-      {loading && <p>Loading...</p>}
-      {error && <p>Looks like we can't find the user.</p>}
-      {user && !loading && !error && <UserCard user={user} />}
+    <div className="max-w-3xl mx-auto">
+      <SearchForm onSearch={handleSearch} />
+      <SearchResults users={users} onLoadMore={loadMore} hasMore={hasMore} />
     </div>
   );
-}
+};
 
-export default App;
+export default SearchPage;
