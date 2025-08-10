@@ -7,11 +7,11 @@ function UserProfile() {
   className="rounded-full w-36 h-36 sm:w-24 sm:h-24 md:w-36 md:h-36 mx-auto"
 />
       <h1 className="text-lg md:text-xl text-blue-800 my-4 font-semibold">
-        Nick Odipo
+        John Doe
       </h1>
-      <p className="text-gray-600 text-sm">
-        Footballer at Barcelona Loves to play football and make fashion
-      </p>
+      <p className="text-gray-600 text-base">
+  Developer at Example Co. Loves to write code and explore new technologies.
+</p>
     </div>
   );
 }
